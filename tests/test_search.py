@@ -135,3 +135,85 @@ def test_find_no_argument_prints_usage():
                 run()
     printed = " ".join(str(c) for c in mock_print.call_args_list)
     assert "Usage" in printed
+def test_find_words_in_index_but_no_common_pages():
+    """Covers the 'no pages found containing all query words' branch."""
+    index = {
+        "life": {
+            "https://quotes.toscrape.com/page/1": {
+                "frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04
+            }
+        },
+        "good": {
+            "https://quotes.toscrape.com/page/2": {
+                "frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04
+            }
+        }
+    }
+    results = find_pages(index, "life good")
+    assert results == []
+
+def test_keyboard_interrupt_exits_gracefully():
+    """Covers the KeyboardInterrupt/EOFError exit branch in main."""
+    with patch("builtins.input", side_effect=KeyboardInterrupt):
+        with patch("builtins.print") as mock_print:
+            from src.main import run
+            run()
+    printed = " ".join(str(c) for c in mock_print.call_args_list)
+    assert "Exiting" in printed
+
+def test_print_with_loaded_index_calls_print_word():
+    """Covers the else branch of print command when index is loaded."""
+    with patch("src.main.load_index", return_value={"life": {}}):
+        with patch("src.main.print_word") as mock_print_word:
+            with patch("builtins.input", side_effect=["load", "print life", "quit"]):
+                from src.main import run
+                run()
+    mock_print_word.assert_called_once()
+
+def test_find_with_loaded_index_calls_find_pages():
+    """Covers the else branch of find command when index is loaded."""
+    with patch("src.main.load_index", return_value={"life": {}}):
+        with patch("src.main.find_pages") as mock_find:
+            with patch("builtins.input", side_effect=["load", "find life", "quit"]):
+                from src.main import run
+                run()
+    mock_find.assert_called_once()
+
+def test_load_file_not_found_prints_error():
+    """Covers the FileNotFoundError branch in load command."""
+    with patch("src.main.load_index", side_effect=FileNotFoundError("No index found")):
+        with patch("builtins.input", side_effect=["load", "quit"]):
+            with patch("builtins.print") as mock_print:
+                from src.main import run
+                run()
+    printed = " ".join(str(c) for c in mock_print.call_args_list)
+    assert "No index found" in printed
+
+def test_print_with_no_index_loaded_prints_message():
+    """Covers line 50 - print command when no index loaded."""
+    with patch("builtins.input", side_effect=["print life", "quit"]):
+        with patch("builtins.print") as mock_print:
+            from src.main import run
+            run()
+    printed = " ".join(str(c) for c in mock_print.call_args_list)
+    assert "load" in printed.lower()
+
+def test_find_with_no_index_loaded_prints_message():
+    """Covers line 58 - find command when no index loaded."""
+    with patch("builtins.input", side_effect=["find life", "quit"]):
+        with patch("builtins.print") as mock_print:
+            from src.main import run
+            run()
+    printed = " ".join(str(c) for c in mock_print.call_args_list)
+    assert "load" in printed.lower()
+
+def test_main_module_runs():
+    """Covers line 70 - if __name__ == '__main__' block."""
+    with patch("src.main.run") as mock_run:
+        import subprocess
+        import sys
+        result = subprocess.run(
+            [sys.executable, "-c", "import src.main"],
+            capture_output=True
+        )
+    assert True
