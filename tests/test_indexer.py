@@ -54,3 +54,16 @@ def test_add_tfidf():
 def test_word_not_in_index():
     index = build_index(SAMPLE_PAGES)
     assert "zzznonsenseword" not in index
+import time
+
+def test_build_index_performance():
+    """Index building should complete in under 2 seconds for 100 pages."""
+    large_pages = {
+        f"https://quotes.toscrape.com/page/{i}": "the quick brown fox jumps over the lazy dog " * 100
+        for i in range(100)
+    }
+    start = time.time()
+    index = build_index(large_pages)
+    duration = time.time() - start
+    assert duration < 2.0, f"Indexing too slow: {duration:.2f}s"
+    assert len(index) > 0

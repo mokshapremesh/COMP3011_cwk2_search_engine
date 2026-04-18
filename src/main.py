@@ -3,6 +3,12 @@ from src.indexer import build_index, add_tfidf
 from src.search import save_index, load_index, print_word, find_pages
 
 def run():
+    """
+    Main CLI loop for the search engine.
+
+    Supports commands: build, load, print <word>, find <query>, quit
+    Maintains index state in memory between commands.
+    """
     """Main CLI loop for the search engine."""
     print("Search Engine Ready. Commands: build, load, print <word>, find <query>, quit")
     index = {}

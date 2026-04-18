@@ -11,6 +11,17 @@ def tokenize(text: str) -> list:
 def build_index(pages: dict) -> dict:
     """
     Build an inverted index from crawled pages.
+
+    Time complexity:  O(N * M) where N = number of pages, M = average words per page
+    Space complexity: O(V * D) where V = vocabulary size, D = average docs per word
+
+    Data structure choice: nested dict {word: {url: stats}}
+    - O(1) average lookup for any word
+    - O(1) average lookup for any url within a word
+    - More efficient than a flat list O(N) for large indices
+    """
+    """
+    Build an inverted index from crawled pages.
     
     Structure:
     {
