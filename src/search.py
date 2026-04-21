@@ -77,3 +77,42 @@ def find_pages(index: dict, query: str) -> list:
         print(f"  {url}  (score: {score:.4f})")
 
     return results
+def suggest_similar(index: dict, word: str, max_suggestions: int = 3) -> list:
+    """
+    Suggest similar words from the index using Levenshtein distance.
+    
+    Args:
+        index: the inverted index
+        word: the word to find suggestions for
+        max_suggestions: maximum number of suggestions to return
+    
+    Returns:
+        list of similar words found in the index
+    
+    Time complexity: O(V * L) where V = vocabulary size, L = word length
+    """
+    def levenshtein(s1: str, s2: str) -> int:
+        """Calculate edit distance between two strings."""
+        if len(s1) < len(s2):
+            return levenshtein(s2, s1)
+        if len(s2) == 0:
+            return len(s1)
+        previous_row = range(len(s2) + 1)
+        for i, c1 in enumerate(s1):
+            current_row = [i + 1]
+            for j, c2 in enumerate(s2):
+                insertions = previous_row[j + 1] + 1
+                deletions = current_row[j] + 1
+                substitutions = previous_row[j] + (c1 != c2)
+                current_row.append(min(insertions, deletions, substitutions))
+            previous_row = current_row
+        return previous_row[-1]
+
+    word = word.lower().strip()
+    suggestions = []
+    for indexed_word in index.keys():
+        distance = levenshtein(word, indexed_word)
+        if distance <= 2:
+            suggestions.append((indexed_word, distance))
+    suggestions.sort(key=lambda x: x[1])
+    return [w for w, _ in suggestions[:max_suggestions]]

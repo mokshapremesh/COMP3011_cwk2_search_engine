@@ -217,3 +217,42 @@ def test_main_module_runs():
             capture_output=True
         )
     assert True
+
+def test_suggest_similar_finds_close_words():
+    """Test that suggest_similar returns words with small edit distance."""
+    from src.search import suggest_similar
+    results = suggest_similar(SAMPLE_INDEX, "lif")
+    assert "life" in results
+
+def test_suggest_similar_no_results():
+    """Test that suggest_similar returns empty list for very different words."""
+    from src.search import suggest_similar
+    results = suggest_similar(SAMPLE_INDEX, "zzzzzzzzz")
+    assert results == []
+
+def test_suggest_similar_returns_list():
+    """Test that suggest_similar always returns a list."""
+    from src.search import suggest_similar
+    results = suggest_similar(SAMPLE_INDEX, "life")
+    assert isinstance(results, list)
+
+def test_suggest_similar_max_suggestions():
+    """Test that suggest_similar respects max_suggestions limit."""
+    from src.search import suggest_similar
+    results = suggest_similar(SAMPLE_INDEX, "life", max_suggestions=1)
+    assert len(results) <= 1
+
+def test_find_word_not_found_with_suggestion(capsys):
+    """Test that find_pages prints not found message."""
+    from src.search import suggest_similar
+    index = {"life": {"https://quotes.toscrape.com": {"frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04}}}
+    find_pages(index, "xyz")
+    captured = capsys.readouterr()
+    assert "not found" in captured.out
+
+def test_print_word_not_found_with_suggestion(capsys):
+    """Test that print_word prints not found message."""
+    index = {"life": {"https://quotes.toscrape.com": {"frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04}}}
+    print_word(index, "xyz")
+    captured = capsys.readouterr()
+    assert "not found" in captured.out
