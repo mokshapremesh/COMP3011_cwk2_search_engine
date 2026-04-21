@@ -49,7 +49,11 @@ def find_pages(index: dict, query: str) -> list:
     matching_urls = None
     for word in words:
         if word not in index:
-            print(f"'{word}' not found in index.")
+            suggestions = suggest_similar(index, word)
+            if suggestions:
+                print(f"'{word}' not found. Did you mean: {', '.join(suggestions)}?")
+            else:
+                print(f"'{word}' not found in index.")
             return []
         urls_for_word = set(index[word].keys())
         if matching_urls is None:
