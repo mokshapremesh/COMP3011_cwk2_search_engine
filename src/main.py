@@ -9,7 +9,6 @@ def run():
     Supports commands: build, load, print <word>, find <query>, quit
     Maintains index state in memory between commands.
     """
-    """Main CLI loop for the search engine."""
     print("Search Engine Ready. Commands: build, load, print <word>, find <query>, quit")
     index = {}
 

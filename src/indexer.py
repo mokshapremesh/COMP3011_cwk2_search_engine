@@ -20,20 +20,7 @@ def build_index(pages: dict) -> dict:
     - O(1) average lookup for any url within a word
     - More efficient than a flat list O(N) for large indices
     """
-    """
-    Build an inverted index from crawled pages.
-    
-    Structure:
-    {
-        "word": {
-            "url": {
-                "frequency": 3,
-                "positions": [4, 17, 42],
-                "tf": 0.03
-            }
-        }
-    }
-    """
+
     index = defaultdict(dict)
     doc_word_counts = {}
 
