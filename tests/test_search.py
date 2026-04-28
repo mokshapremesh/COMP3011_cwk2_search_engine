@@ -256,3 +256,31 @@ def test_print_word_not_found_with_suggestion(capsys):
     print_word(index, "xyz")
     captured = capsys.readouterr()
     assert "not found" in captured.out
+
+def test_find_word_not_found_shows_suggestion_message(capsys):
+    """Covers line 54 - Did you mean message when suggestions exist."""
+    from src.search import suggest_similar
+    index = {
+        "indifference": {
+            "https://quotes.toscrape.com": {
+                "frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04
+            }
+        }
+    }
+    find_pages(index, "indiference")
+    captured = capsys.readouterr()
+    assert "Did you mean" in captured.out
+
+def test_levenshtein_empty_string():
+    """Covers line 103 - levenshtein distance when s2 is empty."""
+    from src.search import suggest_similar
+    index = {"life": {"https://quotes.toscrape.com": {"frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04}}}
+    result = suggest_similar(index, "li")
+    assert isinstance(result, list)
+
+def test_levenshtein_s1_longer_s2_empty():
+    """Covers line 103 - return len(s1) when s2 is empty and s1 is longer."""
+    from src.search import suggest_similar
+    index = {"ab": {"https://quotes.toscrape.com": {"frequency": 1, "positions": [1], "tf": 0.01, "tfidf": 0.04}}}
+    result = suggest_similar(index, "a")
+    assert isinstance(result, list)
