@@ -1,3 +1,25 @@
+"""
+test_search.py — Unit and integration tests for the search module
+
+Testing strategy
+----------------
+A small SAMPLE_INDEX is defined at module level and reused across tests
+so each test is self-contained and independent of the file system or
+the network.
+
+Coverage includes:
+  - save_index / load_index:  round-trip JSON serialisation (tmp_path fixture)
+  - print_word:               found / not-found branches, case insensitivity
+  - find_pages:               single-word, multi-word AND, no-match, empty query,
+                              TF-IDF ranking order, no-common-pages edge case
+  - suggest_similar:          Levenshtein correctness, max_suggestions limit,
+                              no-suggestion case, return type
+  - CLI integration:          each main.py command is tested end-to-end by
+                              patching builtins.input and asserting on side effects
+  - Edge cases:               KeyboardInterrupt, EOFError, missing index file,
+                              unknown command, blank input, missing argument
+"""
+
 import pytest
 import json
 import os

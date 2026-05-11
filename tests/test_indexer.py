@@ -1,3 +1,19 @@
+"""
+test_indexer.py — Unit and performance tests for the indexer module
+
+Testing strategy
+----------------
+Tests use small, hand-crafted page dictionaries so expected values can
+be calculated by hand and verified precisely.  No mocking is required
+because the indexer has no I/O side effects.
+
+Coverage includes:
+  - tokenize:     case normalisation, punctuation removal, return type
+  - build_index:  index structure, frequency counting, position tracking, TF
+  - add_tfidf:    TF-IDF augmentation
+  - Performance:  indexing 100 pages of 900 words must complete in < 2 s
+"""
+
 import pytest
 from src.indexer import tokenize, build_index, add_tfidf
 

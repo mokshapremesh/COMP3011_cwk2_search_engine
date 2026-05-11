@@ -1,3 +1,20 @@
+"""
+test_crawler.py — Unit and integration tests for the crawler module
+
+Testing strategy
+----------------
+All network I/O is mocked with unittest.mock so tests run offline,
+are deterministic, and complete in milliseconds.  The real logic being
+tested is:
+
+  - get_links:    correct filtering of internal vs external URLs
+  - extract_text: HTML tag stripping
+  - get_page:     HTTP request dispatching and error propagation
+  - crawl:        BFS traversal, deduplication, politeness, error recovery
+
+Each test covers a single behaviour so failures are easy to localise.
+"""
+
 import pytest
 import time
 from unittest.mock import patch, Mock, call
